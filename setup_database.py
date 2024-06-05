@@ -17,7 +17,8 @@ def setup_database():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS predictions (
         id INTEGER PRIMARY KEY,
-        filename TEXT,
+        filename_original TEXT,
+        filename_server TEXT,
         model_name TEXT,
         prediction TEXT,
         confidence REAL,
