@@ -1,14 +1,16 @@
 # app.py
 import os
 import sqlite3
+from datetime import datetime
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from tensorflow.keras.applications import VGG16, VGG19, EfficientNetB7, InceptionV3, Xception
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
-from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input
+# from tensorflow.keras.applications import VGG16, VGG19, EfficientNetB7, InceptionV3, Xception # type: ignore
+from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
+from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
 
-from lib.vgg19_prediction import predict_image
+from lib.vgg19_prediction import predict_image as predict_image_vgg19
+from lib.vgg16_prediction import predict_image as predict_image_vgg16
 
 app = Flask(__name__)
 CORS(app)
@@ -28,22 +30,33 @@ def classify_image():
         print('No image uploaded')
         return jsonify({'error': 'No image uploaded'}), 400
     
+    model_name = request.form.get('model', 'vgg19')  # Default to VGG16 if not specified
     file = request.files['image']
-    filename = os.path.join('uploads', file.filename)
-    file.save(filename)
+    original_filename = file.filename
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    server_filename = f"{timestamp}_{original_filename}"
+    filepath = os.path.join('uploads', server_filename)
+    file.save(filepath)
 
     try:
-        preds = predict_image(filename)
+        if model_name == 'vgg16':
+            preds = predict_image_vgg16(filepath)
+        else:
+            preds = predict_image_vgg19(filepath)
+        
         results = [{'label': p[1], 'confidence': float(p[2] * 100)} for p in preds]
         for result in results:
-            store_prediction(file.filename, 'vgg19', result['label'], result['confidence'])
+            store_prediction(original_filename, model_name, result['label'], result['confidence'])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
-        print(filename, '<---------------')
+        print(original_filename, '<---------------')
         # os.remove(filename)
     
-    return jsonify({'results': results})
+    return jsonify({
+        'model': model_name,
+        'results': results
+    })
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

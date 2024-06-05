@@ -1,2 +1,3 @@
 uploads/*
 predictions.db
+lib/__pycache__/*
