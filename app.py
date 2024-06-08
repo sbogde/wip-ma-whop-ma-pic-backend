@@ -70,10 +70,13 @@ def classify_image():
         'resized_image': filename_resized
     })
 
-@app.route('/uploads/<filename>')
+@app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
+
 if __name__ == '__main__':
     os.makedirs('uploads', exist_ok=True)
+    os.makedirs('uploads/models', exist_ok=True)
+
     app.run(debug=True)
