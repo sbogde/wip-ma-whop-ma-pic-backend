@@ -7,6 +7,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 # from tensorflow.keras.applications import VGG16, VGG19, EfficientNetB7, InceptionV3, Xception # type: ignore
+from tensorflow.keras.applications import VGG16, VGG19
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
 
@@ -17,6 +18,12 @@ from PIL import Image
 app = Flask(__name__)
 CORS(app)
 
+models = {
+    "vgg16": VGG16(weights='imagenet'),
+    "vgg19": VGG19(weights='imagenet'),
+    # more models to be needed
+}
+
 def store_prediction(filename_original, filename_server, model_name, prediction, confidence):
     conn = sqlite3.connect('predictions.db')
     cursor = conn.cursor()
@@ -25,6 +32,34 @@ def store_prediction(filename_original, filename_server, model_name, prediction,
     ''', (filename_original, filename_server, model_name, prediction, confidence))
     conn.commit()
     conn.close()
+
+def preprocess_image(img_path, target_size=(224, 224)):
+    img = load_img(img_path, target_size=target_size)
+    img = img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img = preprocess_input(img)
+    return img
+
+def predict_image(model, img_path):
+    img = preprocess_image(img_path)
+    preds = model.predict(img)
+    decoded_preds = decode_predictions(preds, top=5)[0]
+    resized_img = img[0]  # Get the resized image without batch dimension
+    return decoded_preds, resized_img
+
+def denormalize_image(img_array):
+    img_array = img_array.copy()
+    img_array += [123.68, 116.779, 103.939]  # VGG mean values for RGB channels
+    img_array = img_array[..., ::-1]  # Convert BGR to RGB
+    img_array = np.clip(img_array, 0, 255)
+    return img_array
+
+def save_image(img_array, save_path):
+    img_array = denormalize_image(img_array)
+    img_array = np.uint8(img_array)
+    img = Image.fromarray(img_array)
+    img.save(save_path)
+
 
 @app.route('/classify', methods=['POST'])
 def classify_image():
@@ -43,17 +78,18 @@ def classify_image():
 
 
     try:
-        if model_name == 'vgg16':
-            preds, resized_img = predict_image_vgg16(filepath)
-        else:
-            preds, resized_img = predict_image_vgg19(filepath)
+        model = models.get(model_name)
+        print(model_name, '<--------------- model_name')
+
+        if model is None:
+            return jsonify({'error': 'Model not found'}), 400
+
+        preds, resized_img = predict_image(model, filepath)
 
         # Save the resized image
-        resized_img_pil = Image.fromarray(np.uint8(resized_img))
         resized_img_path = os.path.join('uploads/models', filename_resized)
-        resized_img_pil.save(resized_img_path)
+        save_image(resized_img, resized_img_path)
 
-        
         results = [{'label': p[1], 'confidence': float(p[2] * 100)} for p in preds]
         for result in results:
             store_prediction(filename_original, filename_resized, model_name, result['label'], result['confidence'])
@@ -69,6 +105,7 @@ def classify_image():
         'results': results,
         'resized_image': filename_resized
     })
+
 
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
