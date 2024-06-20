@@ -3,7 +3,7 @@ from tensorflow.keras.applications.efficientnet import EfficientNetB0, preproces
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 model = EfficientNetB0(weights='imagenet')
-model.summary()
+# model.summary()
 
 def load_and_preprocess_image(img_path):
     img = load_img(img_path, target_size=(224, 224))

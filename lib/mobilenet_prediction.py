@@ -3,7 +3,7 @@ from tensorflow.keras.applications.mobilenet import MobileNet, preprocess_input,
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 model = MobileNet()  
-model.summary()
+# model.summary()
 
 def load_and_preprocess_image(img_path):
     img = load_img(img_path, target_size=(224, 224))

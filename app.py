@@ -124,8 +124,13 @@ def uploaded_file(filename):
 
 
 if __name__ == '__main__':
-    os.makedirs('uploads', exist_ok=True)
-    os.makedirs('uploads/models', exist_ok=True)
+    # Ensuring the directories are created
+    if not os.path.exists('uploads'):
+        os.makedirs('uploads')
+        print("Created 'uploads' directory.")
+    if not os.path.exists('uploads/models'):
+        os.makedirs('uploads/models')
+        print("Created 'uploads/models' directory.")
 
     app.run(debug=True)
     # app.run(host="0.0.0.0", port=5000, debug=True)
