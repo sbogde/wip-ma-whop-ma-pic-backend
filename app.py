@@ -14,6 +14,7 @@ from PIL import Image
 # from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications.mobilenet import MobileNet
 from tensorflow.keras.applications.efficientnet import EfficientNetB0
+from tensorflow.keras.applications.efficientnet import EfficientNetB1
 
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
@@ -30,9 +31,9 @@ CORS(app)
 models = {
     "mobilenet": MobileNet(weights='imagenet'),
     "efficientnetb0": EfficientNetB0(weights='imagenet'),
+    "efficientnetb1": EfficientNetB1(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
-    # more models to be needed
 }
 
 def store_prediction(filename_original, filename_server, model_name, prediction, confidence):
@@ -164,11 +165,13 @@ def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
 # Ensure the uploads directories and database are created
-os.makedirs('uploads', exist_ok=True)
-os.makedirs('uploads/models', exist_ok=True)
-print("Created 'uploads' directory.")
-print("Created 'uploads/models' directory.")
-initialize_db()
+if os.environ.get('FLASK_ENV') == 'production':
+    # Ensure the uploads directories and database are created
+    os.makedirs('uploads', exist_ok=True)
+    os.makedirs('uploads/models', exist_ok=True)
+    print("Created 'uploads' directory.")
+    print("Created 'uploads/models' directory.")
+    initialize_db()
 
 
 if __name__ == '__main__':
