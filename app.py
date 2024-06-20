@@ -71,14 +71,35 @@ def save_image(img_array, save_path):
     img = Image.fromarray(img_array)
     img.save(save_path)
 
+def initialize_db():
+    if not os.path.exists('predictions.db'):
+        conn = sqlite3.connect('predictions.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+        CREATE TABLE predictions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename_original TEXT,
+            filename_server TEXT,
+            model_name TEXT,
+            prediction TEXT,
+            confidence REAL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+        conn.commit()
+        conn.close()
+        print("Created 'predictions.db' database.")
+
 @app.route('/')
 def index():
     uploads_exists = os.path.exists('uploads')
     uploads_models_exists = os.path.exists('uploads/models')
+    db_exists = os.path.exists('predictions.db')
     return jsonify({
         "message": "Welcome to the Image Classification API!",
         "uploads_exists": uploads_exists,
-        "uploads_models_exists": uploads_models_exists
+        "uploads_models_exists": uploads_models_exists,
+        "db_exists": db_exists
     })
 
 @app.route('/mkdirs', methods=['POST'])
@@ -87,6 +108,10 @@ def create_directories():
     os.makedirs('uploads/models', exist_ok=True)
     return jsonify({"message": "Directories created."})
 
+@app.route('/mkdb', methods=['POST'])
+def create_database():
+    initialize_db()
+    return jsonify({"message": "Database created."})
 
 @app.route('/classify', methods=['POST'])
 def classify_image():
@@ -138,11 +163,12 @@ def classify_image():
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
-# Ensure the uploads directories are created
+# Ensure the uploads directories and database are created
 os.makedirs('uploads', exist_ok=True)
 os.makedirs('uploads/models', exist_ok=True)
 print("Created 'uploads' directory.")
 print("Created 'uploads/models' directory.")
+initialize_db()
 
 
 if __name__ == '__main__':
