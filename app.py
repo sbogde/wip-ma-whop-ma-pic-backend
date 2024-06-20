@@ -6,21 +6,29 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from PIL import Image
+from waitress import serve
+
 # from tensorflow.keras.applications import VGG16, VGG19, EfficientNetB7, InceptionV3, Xception # type: ignore
-from tensorflow.keras.applications import VGG16, VGG19
+# from tensorflow.keras.applications import VGG16, VGG19
+# from tensorflow.keras.applications import VGG16
+from tensorflow.keras.applications.mobilenet import MobileNet
+
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
 
-from lib.vgg19_prediction import predict_image as predict_image_vgg19
-from lib.vgg16_prediction import predict_image as predict_image_vgg16
-from PIL import Image
+# from lib.vgg16_prediction import predict_image as predict_image_vgg16
+# from lib.vgg19_prediction import predict_image as predict_image_vgg19
+from lib.mobilenet_prediction import predict_image as predict_image_mobilenet
+
 
 app = Flask(__name__)
 CORS(app)
 
 models = {
-    "vgg16": VGG16(weights='imagenet'),
-    "vgg19": VGG19(weights='imagenet'),
+    "mobilenet": MobileNet(weights='imagenet'),
+    # "vgg16": VGG16(weights='imagenet'),
+    # "vgg19": VGG19(weights='imagenet'),
     # more models to be needed
 }
 
@@ -117,3 +125,11 @@ if __name__ == '__main__':
     os.makedirs('uploads/models', exist_ok=True)
 
     app.run(debug=True)
+    # app.run(host="0.0.0.0", port=5000, debug=True)
+
+    # if os.environ.get('FLASK_ENV') == 'production':
+        # serve(app, host='0.0.0.0', port=5000)
+    # else:
+        # app.run(host="0.0.0.0", port=5000, debug=True)
+
+
