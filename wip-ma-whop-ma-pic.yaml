@@ -22,7 +22,7 @@ services:
     instance_count: 2
     instance_size_slug: apps-s-1vcpu-1gb
     name: wip-ma-whop-ma-pic-backend
-    run_command: gunicorn --worker-tmp-dir /dev/shm app_test:app
+    run_command: gunicorn --worker-tmp-dir /dev/shm apps:app
     source_dir: /
     envs:
       - key: DATABASE_URL
