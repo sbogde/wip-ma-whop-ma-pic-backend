@@ -7,12 +7,13 @@ from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from PIL import Image
-from waitress import serve
+# from waitress import serve
 
 # from tensorflow.keras.applications import VGG16, VGG19, EfficientNetB7, InceptionV3, Xception # type: ignore
 # from tensorflow.keras.applications import VGG16, VGG19
 # from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications.mobilenet import MobileNet
+from tensorflow.keras.applications.efficientnet import EfficientNetB0
 
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
@@ -20,6 +21,7 @@ from tensorflow.keras.applications.imagenet_utils import decode_predictions, pre
 # from lib.vgg16_prediction import predict_image as predict_image_vgg16
 # from lib.vgg19_prediction import predict_image as predict_image_vgg19
 from lib.mobilenet_prediction import predict_image as predict_image_mobilenet
+from lib.efficient_net_b0 import predict_image as predict_image_efficientnet
 
 
 app = Flask(__name__)
@@ -27,6 +29,7 @@ CORS(app)
 
 models = {
     "mobilenet": MobileNet(weights='imagenet'),
+    "efficientnetb0": EfficientNetB0(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
     # more models to be needed
