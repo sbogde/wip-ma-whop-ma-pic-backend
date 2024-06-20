@@ -71,6 +71,22 @@ def save_image(img_array, save_path):
     img = Image.fromarray(img_array)
     img.save(save_path)
 
+@app.route('/')
+def index():
+    uploads_exists = os.path.exists('uploads')
+    uploads_models_exists = os.path.exists('uploads/models')
+    return jsonify({
+        "message": "Welcome to the Image Classification API!",
+        "uploads_exists": uploads_exists,
+        "uploads_models_exists": uploads_models_exists
+    })
+
+@app.route('/mkdirs', methods=['POST'])
+def create_directories():
+    os.makedirs('uploads', exist_ok=True)
+    os.makedirs('uploads/models', exist_ok=True)
+    return jsonify({"message": "Directories created."})
+
 
 @app.route('/classify', methods=['POST'])
 def classify_image():
@@ -122,10 +138,21 @@ def classify_image():
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
+# Ensure the uploads directories are created
+os.makedirs('uploads', exist_ok=True)
+os.makedirs('uploads/models', exist_ok=True)
+print("Created 'uploads' directory.")
+print("Created 'uploads/models' directory.")
+
 
 if __name__ == '__main__':
-    os.makedirs('/tmp/uploads', exist_ok=True)
-    os.makedirs('/tmp/uploads/models', exist_ok=True)
+    # Ensuring the directories are created
+    # if not os.path.exists('uploads'):
+    #     os.makedirs('uploads')
+    #     print("Created 'uploads' directory.")
+    # if not os.path.exists('uploads/models'):
+    #     os.makedirs('uploads/models')
+    #     print("Created 'uploads/models' directory.")
 
     app.run(debug=True)
     # app.run(host="0.0.0.0", port=5000, debug=True)
