@@ -52,8 +52,12 @@ def preprocess_image(img_path, target_size=(224, 224)):
     img = preprocess_input(img)
     return img
 
-def predict_image(model, img_path):
-    img = preprocess_image(img_path)
+def predict_image(model, model_name, img_path):
+    target_size = (224, 224)
+    if model_name == "efficientnetb1":
+        target_size = (240, 240)
+
+    img = preprocess_image(img_path, target_size)
     preds = model.predict(img)
     decoded_preds = decode_predictions(preds, top=5)[0]
     resized_img = img[0]  # Get the resized image without batch dimension
@@ -137,7 +141,7 @@ def classify_image():
         if model is None:
             return jsonify({'error': 'Model not found'}), 400
 
-        preds, resized_img = predict_image(model, filepath)
+        preds, resized_img = predict_image(model, model_name, filepath)
 
         # Save the resized image
         resized_img_path = os.path.join('uploads/models', filename_resized)
