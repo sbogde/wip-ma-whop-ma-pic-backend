@@ -22,6 +22,8 @@ from tensorflow.keras.applications.efficientnet import EfficientNetB3
 from tensorflow.keras.applications.efficientnet import EfficientNetB4
 from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.applications.xception import Xception
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.vgg19 import VGG19
 
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
@@ -45,6 +47,8 @@ models = {
     "efficientnetb4": EfficientNetB4(weights='imagenet'),
     "inceptionv3": InceptionV3(weights='imagenet'),
     "xception": Xception(weights='imagenet'),
+    "vgg16": VGG16(weights='imagenet'),
+    "vgg19": VGG19(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
 }
@@ -73,7 +77,9 @@ def predict_image(model, model_name, img_path):
         "efficientnetb3": (300, 300),
         "efficientnetb4": (380, 380),
         "inceptionv3": (299, 299),
-        "xception": (299, 299)
+        "xception": (299, 299),
+        "vgg16": (224, 224),
+        "vgg19": (224, 224)
     }
     target_size = target_sizes.get(model_name, (224, 224))
 
