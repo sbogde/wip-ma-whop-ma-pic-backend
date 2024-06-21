@@ -20,7 +20,9 @@ from tensorflow.keras.applications.efficientnet import EfficientNetB1
 from tensorflow.keras.applications.efficientnet import EfficientNetB2
 from tensorflow.keras.applications.efficientnet import EfficientNetB3
 from tensorflow.keras.applications.efficientnet import EfficientNetB4
-234
+from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.applications.xception import Xception
+
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
 
@@ -41,6 +43,8 @@ models = {
     "efficientnetb2": EfficientNetB2(weights='imagenet'),
     "efficientnetb3": EfficientNetB3(weights='imagenet'),
     "efficientnetb4": EfficientNetB4(weights='imagenet'),
+    "inceptionv3": InceptionV3(weights='imagenet'),
+    "xception": Xception(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
 }
@@ -62,16 +66,16 @@ def preprocess_image(img_path, target_size=(224, 224)):
     return img
 
 def predict_image(model, model_name, img_path):
-    target_size = (224, 224)
-    if model_name == "efficientnetb1":
-        target_size = (240, 240)
-    elif model_name == "efficientnetb2":
-        target_size = (260, 260)
-    elif model_name == "efficientnetb3":
-        target_size = (300, 300)
-    elif model_name == "efficientnetb4":
-        target_size = (380, 380)
-    
+    target_sizes = {
+        "efficientnetb0": (224, 224),
+        "efficientnetb1": (240, 240),
+        "efficientnetb2": (260, 260),
+        "efficientnetb3": (300, 300),
+        "efficientnetb4": (380, 380),
+        "inceptionv3": (299, 299),
+        "xception": (299, 299)
+    }
+    target_size = target_sizes.get(model_name, (224, 224))
 
     img = preprocess_image(img_path, target_size)
     preds = model.predict(img)
