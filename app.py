@@ -15,14 +15,15 @@ from PIL import Image
 from tensorflow.keras.applications.mobilenet import MobileNet
 from tensorflow.keras.applications.efficientnet import EfficientNetB0
 from tensorflow.keras.applications.efficientnet import EfficientNetB1
+from tensorflow.keras.applications.densenet import DenseNet121
 
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
 
 # from lib.vgg16_prediction import predict_image as predict_image_vgg16
 # from lib.vgg19_prediction import predict_image as predict_image_vgg19
-from lib.mobilenet_prediction import predict_image as predict_image_mobilenet
-from lib.efficient_net_b0 import predict_image as predict_image_efficientnet
+# from lib.mobilenet_prediction import predict_image as predict_image_mobilenet
+# from lib.efficient_net_b0 import predict_image as predict_image_efficientnet
 
 
 app = Flask(__name__)
@@ -32,6 +33,7 @@ models = {
     "mobilenet": MobileNet(weights='imagenet'),
     "efficientnetb0": EfficientNetB0(weights='imagenet'),
     "efficientnetb1": EfficientNetB1(weights='imagenet'),
+    "densenet121": DenseNet121(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
 }
