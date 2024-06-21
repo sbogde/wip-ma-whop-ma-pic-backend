@@ -12,11 +12,15 @@ from PIL import Image
 # from tensorflow.keras.applications import VGG16, VGG19, EfficientNetB7, InceptionV3, Xception # type: ignore
 # from tensorflow.keras.applications import VGG16, VGG19
 # from tensorflow.keras.applications import VGG16
+
+from tensorflow.keras.applications.densenet import DenseNet121
 from tensorflow.keras.applications.mobilenet import MobileNet
 from tensorflow.keras.applications.efficientnet import EfficientNetB0
 from tensorflow.keras.applications.efficientnet import EfficientNetB1
-from tensorflow.keras.applications.densenet import DenseNet121
-
+from tensorflow.keras.applications.efficientnet import EfficientNetB2
+from tensorflow.keras.applications.efficientnet import EfficientNetB3
+from tensorflow.keras.applications.efficientnet import EfficientNetB4
+234
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
 from tensorflow.keras.applications.imagenet_utils import decode_predictions, preprocess_input # type: ignore
 
@@ -30,10 +34,13 @@ app = Flask(__name__)
 CORS(app)
 
 models = {
+    "densenet121": DenseNet121(weights='imagenet'),
     "mobilenet": MobileNet(weights='imagenet'),
     "efficientnetb0": EfficientNetB0(weights='imagenet'),
     "efficientnetb1": EfficientNetB1(weights='imagenet'),
-    "densenet121": DenseNet121(weights='imagenet'),
+    "efficientnetb2": EfficientNetB2(weights='imagenet'),
+    "efficientnetb3": EfficientNetB3(weights='imagenet'),
+    "efficientnetb4": EfficientNetB4(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
 }
@@ -58,6 +65,13 @@ def predict_image(model, model_name, img_path):
     target_size = (224, 224)
     if model_name == "efficientnetb1":
         target_size = (240, 240)
+    elif model_name == "efficientnetb2":
+        target_size = (260, 260)
+    elif model_name == "efficientnetb3":
+        target_size = (300, 300)
+    elif model_name == "efficientnetb4":
+        target_size = (380, 380)
+    
 
     img = preprocess_image(img_path, target_size)
     preds = model.predict(img)
