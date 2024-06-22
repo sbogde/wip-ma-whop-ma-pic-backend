@@ -15,14 +15,10 @@ from PIL import Image
 
 from tensorflow.keras.applications.densenet import DenseNet121
 from tensorflow.keras.applications.mobilenet import MobileNet
-from tensorflow.keras.applications.efficientnet import EfficientNetB0
-from tensorflow.keras.applications.efficientnet import EfficientNetB1
-from tensorflow.keras.applications.efficientnet import EfficientNetB2
-from tensorflow.keras.applications.efficientnet import EfficientNetB3
-from tensorflow.keras.applications.efficientnet import EfficientNetB4
-from tensorflow.keras.applications.inception_v3 import InceptionV3
-from tensorflow.keras.applications.xception import Xception
-from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.efficientnet import EfficientNetB0, EfficientNetB2, EfficientNetB4, EfficientNetB7
+# from tensorflow.keras.applications.inception_v3 import InceptionV3
+# from tensorflow.keras.applications.xception import Xception
+# from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.vgg19 import VGG19
 
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # type: ignore
@@ -41,13 +37,14 @@ models = {
     "densenet121": DenseNet121(weights='imagenet'),
     "mobilenet": MobileNet(weights='imagenet'),
     "efficientnetb0": EfficientNetB0(weights='imagenet'),
-    "efficientnetb1": EfficientNetB1(weights='imagenet'),
+    # "efficientnetb1": EfficientNetB1(weights='imagenet'),
     "efficientnetb2": EfficientNetB2(weights='imagenet'),
-    "efficientnetb3": EfficientNetB3(weights='imagenet'),
+    # "efficientnetb3": EfficientNetB3(weights='imagenet'),
     "efficientnetb4": EfficientNetB4(weights='imagenet'),
-    "inceptionv3": InceptionV3(weights='imagenet'),
-    "xception": Xception(weights='imagenet'),
-    "vgg16": VGG16(weights='imagenet'),
+    "efficientnetb7": EfficientNetB7(weights='imagenet'),
+    # "inceptionv3": InceptionV3(weights='imagenet'),
+    # "xception": Xception(weights='imagenet'),
+    # "vgg16": VGG16(weights='imagenet'),
     "vgg19": VGG19(weights='imagenet'),
     # "vgg16": VGG16(weights='imagenet'),
     # "vgg19": VGG19(weights='imagenet'),
@@ -76,10 +73,11 @@ def predict_image(model, model_name, img_path):
         "efficientnetb2": (260, 260),
         "efficientnetb3": (300, 300),
         "efficientnetb4": (380, 380),
+        "efficientnetb7": (600, 600),
         "inceptionv3": (299, 299),
         "xception": (299, 299),
         "vgg16": (224, 224),
-        "vgg19": (224, 224)
+        "vgg19": (224, 224),
     }
     target_size = target_sizes.get(model_name, (224, 224))
 
