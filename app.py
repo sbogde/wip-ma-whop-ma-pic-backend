@@ -185,6 +185,22 @@ def classify_image():
         'resized_image': filename_resized
     })
 
+def get_db_connection():
+    conn = sqlite3.connect('predictions.db')  # Adjust the database name as necessary
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/logs/<int:n1>/<int:n2>', defaults={'n2': 5})
+@app.route('/logs/<int:n1>', defaults={'n2': 5})
+def get_logs(n1, n2):
+    conn = get_db_connection()
+    query = 'SELECT * FROM predictions ORDER BY created_at DESC LIMIT ? OFFSET ?'
+    logs = conn.execute(query, (n2, n1)).fetchall()
+    conn.close()
+
+    logs_list = [dict(log) for log in logs]
+    return jsonify(logs_list)
+
 
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
